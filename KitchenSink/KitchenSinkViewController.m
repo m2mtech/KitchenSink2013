@@ -7,6 +7,7 @@
 //
 
 #import "KitchenSinkViewController.h"
+#import "AskerViewController.h"
 
 @interface KitchenSinkViewController ()
 
@@ -14,16 +15,22 @@
 
 @implementation KitchenSinkViewController
 
-- (void)viewDidLoad
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    if ([segue.identifier isEqualToString:@"Ask"]) {
+        AskerViewController *asker = segue.destinationViewController;
+        asker.question = @"What food do you want in the sink?";
+    }
 }
 
-- (void)didReceiveMemoryWarning
+- (IBAction)cancelAsking:(UIStoryboardSegue *)segue
+{    
+}
+
+- (IBAction)doneAsking:(UIStoryboardSegue *)segue
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    AskerViewController *asker = segue.sourceViewController;
+    NSLog(@"%@", asker.answer);
 }
 
 @end

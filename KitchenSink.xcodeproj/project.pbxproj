@@ -18,6 +18,8 @@
 		5BB57542179C0131001A08C8 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5BB57541179C0131001A08C8 /* Default-568h@2x.png */; };
 		5BB57545179C0131001A08C8 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5BB57543179C0131001A08C8 /* MainStoryboard.storyboard */; };
 		5BB57548179C0131001A08C8 /* KitchenSinkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BB57547179C0131001A08C8 /* KitchenSinkViewController.m */; };
+		5BB57550179C029B001A08C8 /* AskerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5BB5754F179C029B001A08C8 /* AskerViewController.m */; };
+		5BB57552179C02FB001A08C8 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 5BB57551179C02FB001A08C8 /* README */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +39,9 @@
 		5BB57544179C0131001A08C8 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		5BB57546179C0131001A08C8 /* KitchenSinkViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KitchenSinkViewController.h; sourceTree = "<group>"; };
 		5BB57547179C0131001A08C8 /* KitchenSinkViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KitchenSinkViewController.m; sourceTree = "<group>"; };
+		5BB5754E179C029B001A08C8 /* AskerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AskerViewController.h; sourceTree = "<group>"; };
+		5BB5754F179C029B001A08C8 /* AskerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AskerViewController.m; sourceTree = "<group>"; };
+		5BB57551179C02FB001A08C8 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +61,7 @@
 		5BB5751F179C0131001A08C8 = {
 			isa = PBXGroup;
 			children = (
+				5BB57551179C02FB001A08C8 /* README */,
 				5BB57531179C0131001A08C8 /* KitchenSink */,
 				5BB5752A179C0131001A08C8 /* Frameworks */,
 				5BB57529179C0131001A08C8 /* Products */,
@@ -88,6 +94,8 @@
 				5BB57543179C0131001A08C8 /* MainStoryboard.storyboard */,
 				5BB57546179C0131001A08C8 /* KitchenSinkViewController.h */,
 				5BB57547179C0131001A08C8 /* KitchenSinkViewController.m */,
+				5BB5754E179C029B001A08C8 /* AskerViewController.h */,
+				5BB5754F179C029B001A08C8 /* AskerViewController.m */,
 				5BB57532179C0131001A08C8 /* Supporting Files */,
 			);
 			path = KitchenSink;
@@ -164,6 +172,7 @@
 				5BB57540179C0131001A08C8 /* Default@2x.png in Resources */,
 				5BB57542179C0131001A08C8 /* Default-568h@2x.png in Resources */,
 				5BB57545179C0131001A08C8 /* MainStoryboard.storyboard in Resources */,
+				5BB57552179C02FB001A08C8 /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +186,7 @@
 				5BB57538179C0131001A08C8 /* main.m in Sources */,
 				5BB5753C179C0131001A08C8 /* KitchenSinkAppDelegate.m in Sources */,
 				5BB57548179C0131001A08C8 /* KitchenSinkViewController.m in Sources */,
+				5BB57550179C029B001A08C8 /* AskerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
