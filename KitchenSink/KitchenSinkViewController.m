@@ -8,12 +8,17 @@
 
 #import "KitchenSinkViewController.h"
 #import "AskerViewController.h"
+#import <MobileCoreServices/MobileCoreServices.h>
+#import "CMMotionManager+Shared.h"
 
-@interface KitchenSinkViewController () <UIActionSheetDelegate>
+@interface KitchenSinkViewController () <UIActionSheetDelegate,
+UIImagePickerControllerDelegate, UINavigationControllerDelegate,
+UIPopoverControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *kitchenSink;
 @property (weak, nonatomic) NSTimer *drainTimer;
 @property (weak, nonatomic) UIActionSheet *sinkControlActionSheet;
+@property (strong, nonatomic) UIPopoverController *imagePickerPopover;
 
 @end
 
@@ -65,6 +70,80 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
     }
 }
 
+- (IBAction)addFoodPhoto:(UIBarButtonItem *)sender {
+    [self presentImagePicker:UIImagePickerControllerSourceTypeSavedPhotosAlbum
+                      sender:sender];
+}
+
+- (IBAction)takeFoodPhoto:(UIBarButtonItem *)sender {
+    [self presentImagePicker:UIImagePickerControllerSourceTypeCamera
+                      sender:sender];
+}
+
+- (void)presentImagePicker:(UIImagePickerControllerSourceType)sourceType
+                    sender:(UIBarButtonItem *)sender
+{
+    if (!self.imagePickerPopover
+        && [UIImagePickerController isSourceTypeAvailable:sourceType]) {
+        NSArray *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:sourceType];
+        if ([availableMediaTypes containsObject:(NSString *)kUTTypeImage]) {
+            UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+            picker.sourceType = sourceType;
+            picker.mediaTypes = @[(NSString *)kUTTypeImage];
+            picker.allowsEditing = YES;
+            picker.delegate = self;
+            if (sourceType != UIImagePickerControllerSourceTypeCamera
+                && (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)) {
+                self.imagePickerPopover = [[UIPopoverController alloc] initWithContentViewController:picker];
+                [self.imagePickerPopover presentPopoverFromBarButtonItem:sender
+                                                permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                                animated:YES];
+                self.imagePickerPopover.delegate = self;
+            } else {
+                [self presentViewController:picker animated:YES completion:nil];                
+            }
+        }
+    }
+}
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    self.imagePickerPopover = nil;
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#define MAX_IMAGE_WIDTH 200
+
+- (void)imagePickerController:(UIImagePickerController *)picker
+didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage *image = info[UIImagePickerControllerEditedImage];
+    if (!image) {
+        image = info[UIImagePickerControllerOriginalImage];
+    }
+    if (image) {
+        UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+        CGRect frame = imageView.frame;
+        if (frame.size.width > MAX_IMAGE_WIDTH) {
+            frame.size.height *= MAX_IMAGE_WIDTH / frame.size.width;
+            frame.size.width = MAX_IMAGE_WIDTH;
+            imageView.frame = frame;
+        }
+        [self setRandomLocationForView:imageView];
+        [self.kitchenSink addSubview:imageView];
+    }
+    if (self.imagePickerPopover) {
+        [self.imagePickerPopover dismissPopoverAnimated:YES];
+        self.imagePickerPopover = nil;
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+}
+
 #define DRAIN_DURATION 3.0
 #define DRAIN_DELAY 1.0
 
@@ -93,12 +172,43 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
     [super viewDidAppear:animated];
     [self startDrainTimer];
     [self cleanDish];
+    [self startDrift];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     [self stopDrainTimer];
+    [self stopDrift];
+}
+
+#define DRIFT_HZ 10
+#define DRIFT_RATE 10
+
+- (void)startDrift
+{
+    CMMotionManager *motionManager = [CMMotionManager sharedMotionManager];
+    if ([motionManager isAccelerometerAvailable]) {
+        [motionManager setAccelerometerUpdateInterval:1 / DRIFT_HZ];
+        [motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue]
+                                            withHandler:^(CMAccelerometerData *data, NSError *error) {
+                                                for (UIView *view in self.kitchenSink.subviews) {
+                                                    CGPoint center = view.center;
+                                                    center.x += data.acceleration.x * DRIFT_RATE;
+                                                    center.y -= data.acceleration.y * DRIFT_RATE;
+                                                    view.center = center;
+                                                    if (!CGRectContainsRect(self.kitchenSink.bounds, view.frame)
+                                                        && !CGRectIntersectsRect(self.kitchenSink.bounds, view.frame)) {
+                                                        [view removeFromSuperview];
+                                                    }
+                                                }
+                                            }];
+    }
+}
+
+- (void)stopDrift
+{
+    [[CMMotionManager sharedMotionManager] stopAccelerometerUpdates];
 }
 
 - (void)drain
@@ -154,7 +264,6 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
 
 - (void)setRandomLocationForView:(UIView *)view
 {
-    [view sizeToFit];
     CGRect sinkBounds = CGRectInset(self.kitchenSink.bounds,
                                     view.frame.size.width / 2,
                                     view.frame.size.height / 2);
@@ -189,6 +298,7 @@ didDismissWithButtonIndex:(NSInteger)buttonIndex
     foodLabel.text = food;
     foodLabel.font = [UIFont systemFontOfSize:46];
     foodLabel.backgroundColor = [UIColor clearColor];
+    [foodLabel sizeToFit];
     [self setRandomLocationForView:foodLabel];
     [self.kitchenSink addSubview:foodLabel];
     //[self drain];
